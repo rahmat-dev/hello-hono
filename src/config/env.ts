@@ -5,8 +5,7 @@ export const env = createEnv({
   server: {
     PORT: z.coerce.number(),
     DATABASE_URL: z.string(),
-    ADMIN_USERNAME: z.string(),
-    ADMIN_PASSWORD: z.string(),
+    JWT_SECRET_KEY: z.string(),
   },
   runtimeEnv: Bun.env,
   emptyStringAsUndefined: true,

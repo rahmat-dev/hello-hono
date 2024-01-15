@@ -1,13 +1,15 @@
 import type { Todo } from '@prisma/client'
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import { jwt } from 'hono/jwt'
 
+import { env } from '~/config/env'
 import { zodValidator } from '~/middleware/zod-validator'
 import {
   createTodo,
   deleteTodo,
-  getAllTodos,
-  getTodoById,
+  getTodoByIdAndUserId,
+  getTodosByUserId,
   updateTodo,
 } from '~/services/todo'
 import { CreateTodoSchema, UpdateTodoSchema } from '~/validators/todo'
@@ -19,20 +21,24 @@ type Variables = {
 const todoRoute = new Hono<{ Variables: Variables }>()
 
 todoRoute
+  .use('*', jwt({ secret: env.JWT_SECRET_KEY }))
   .get('/', async c => {
-    const todos = await getAllTodos()
+    const payload = c.get('jwtPayload')
+    const todos = await getTodosByUserId(payload.id)
 
     return c.json({ ok: true, message: 'success', data: todos })
   })
   .post('/', zodValidator('json', CreateTodoSchema), async c => {
+    const payload = c.get('jwtPayload')
     const { task } = c.req.valid('json')
-    const newTodo = await createTodo(task)
+    const newTodo = await createTodo({ task, userId: payload.id })
 
     return c.json({ ok: true, message: 'created', data: newTodo }, 201)
   })
   .use('/:id', async (c, next) => {
+    const payload = c.get('jwtPayload')
     const id = +c.req.param('id')
-    const todo = await getTodoById(id)
+    const todo = await getTodoByIdAndUserId(id, payload.id)
     if (!todo) throw new HTTPException(404, { message: 'Todo not found' })
 
     c.set('todo', todo)
