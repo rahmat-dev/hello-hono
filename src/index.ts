@@ -1,23 +1,19 @@
 import { Hono } from 'hono'
-import { basicAuth } from 'hono/basic-auth'
 import { HTTPException } from 'hono/http-exception'
 import { logger } from 'hono/logger'
 
-import { env } from '~/config/env'
+import authRoute from '~/routes/auth'
 import todoRoute from '~/routes/todo'
 
 const app = new Hono()
 
-app.use(
-  '*',
-  logger(),
-  basicAuth({ username: env.ADMIN_USERNAME, password: env.ADMIN_PASSWORD }),
-)
+app.use('*', logger())
 
 app.get('/', c => {
   return c.json({ ok: true, message: 'Hello Hono!' })
 })
 
+app.route('/auth', authRoute)
 app.route('/todos', todoRoute)
 
 app.notFound(c => {
