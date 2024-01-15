@@ -22,7 +22,8 @@ app.notFound(c => {
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
-    return c.json({ ok: false, message: err.message }, err.status)
+    const message = err.status === 401 ? 'Unauthorized' : err.message
+    return c.json({ ok: false, message }, err.status)
   }
 
   return c.json({ ok: false, message: err.message }, 500)
