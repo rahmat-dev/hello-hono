@@ -5,14 +5,9 @@ import { sign } from 'hono/jwt'
 import { env } from '~/config/env'
 import { zodValidator } from '~/middleware/zod-validator'
 import { createUser, getUserByEmail } from '~/services/user'
+import { Payload } from '~/types/jwt'
 import { getJwtExpiredTime } from '~/utils/time'
 import { LoginSchema, RegisterSchema } from '~/validators/auth'
-
-type Payload = {
-  sub: number
-  name: string
-  exp: number
-}
 
 const authRoute = new Hono()
 

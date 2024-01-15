@@ -12,6 +12,7 @@ import {
   getTodosByUserId,
   updateTodo,
 } from '~/services/todo'
+import { Payload } from '~/types/jwt'
 import { CreateTodoSchema, UpdateTodoSchema } from '~/validators/todo'
 
 type Variables = {
@@ -23,22 +24,22 @@ const todoRoute = new Hono<{ Variables: Variables }>()
 todoRoute
   .use('*', jwt({ secret: env.JWT_SECRET_KEY }))
   .get('/', async c => {
-    const payload = c.get('jwtPayload')
-    const todos = await getTodosByUserId(payload.id)
+    const payload: Payload = c.get('jwtPayload')
+    const todos = await getTodosByUserId(payload.sub)
 
     return c.json({ ok: true, message: 'success', data: todos })
   })
   .post('/', zodValidator('json', CreateTodoSchema), async c => {
-    const payload = c.get('jwtPayload')
+    const payload: Payload = c.get('jwtPayload')
     const { task } = c.req.valid('json')
-    const newTodo = await createTodo({ task, userId: payload.id })
+    const newTodo = await createTodo({ task, userId: payload.sub })
 
     return c.json({ ok: true, message: 'created', data: newTodo }, 201)
   })
   .use('/:id', async (c, next) => {
-    const payload = c.get('jwtPayload')
+    const payload: Payload = c.get('jwtPayload')
     const id = +c.req.param('id')
-    const todo = await getTodoByIdAndUserId(id, payload.id)
+    const todo = await getTodoByIdAndUserId(id, payload.sub)
     if (!todo) throw new HTTPException(404, { message: 'Todo not found' })
 
     c.set('todo', todo)
