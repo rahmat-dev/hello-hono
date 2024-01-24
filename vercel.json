@@ -1,3 +1,3 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/out" }]
+  "routes": [{ "src": "/(.*)", "dest": "/out/index.js" }]
 }
