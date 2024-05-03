@@ -2,7 +2,8 @@
   "scripts": {
     "dev": "bun run --hot src/index.ts",
     "build": "bun build src/index.ts --minify --splitting --outdir=out",
-    "start": "bun run out/index.js"
+    "start": "bun run out/index.js",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^5.8.0",
