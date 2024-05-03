@@ -12,8 +12,8 @@ app.use('*', logger())
 app.get('/', c => {
   return c.json({ ok: true, message: 'Hello Hono!' })
 })
-app.get('/ping', c => {
-  return c.json({ ok: true, message: 'pong' })
+app.get('/coolify', c => {
+  return c.json({ ok: true, message: "It's cool!!" })
 })
 
 app.route('/auth', authRoute)
