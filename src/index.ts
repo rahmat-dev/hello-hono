@@ -12,6 +12,9 @@ app.use('*', logger())
 app.get('/', c => {
   return c.json({ ok: true, message: 'Hello Hono!' })
 })
+app.get('/ping', c => {
+  return c.json({ ok: true, message: 'pong' })
+})
 
 app.route('/auth', authRoute)
 app.route('/todos', todoRoute)
